@@ -5,7 +5,7 @@ export default{
 </script>
 <script setup>
 import { ref, onMounted } from "vue";
-import "ldrs/Waveform";
+import "ldrs/waveform";
 
 const loading = ref(true);
 
@@ -20,12 +20,12 @@ onMounted(() => {
   <div class="container">
     <!-- Loader -->
     <div v-if="loading" class="loader-screen">
-      <l-Waveform
+      <l-waveform
         size="70"
         stroke="5"
         speed="2"
         color="#4F46E5"
-      ></l-Waveform>
+      ></l-waveform>
 
       <h2>Loading...</h2>
     </div>
