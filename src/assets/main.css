@@ -1,0 +1,17 @@
+@import './base.css';
+
+#app {
+  width: auto;
+  font-weight: normal;
+  height: auto;
+ background: #121827;
+ 
+}
+
+.btn {
+  color: white;
+  border: none;
+  background: none;
+}
+
+
