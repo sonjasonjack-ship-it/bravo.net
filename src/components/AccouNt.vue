@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { Search, Play, Calendar, Clock, Film, Users, Download } from "lucide-vue-next";
-import "ldrs/Waveform"; // Gushyiramo library ya loader
+import "ldrs/waveform"; // Gushyiramo library ya loader
 
 // 1. Loading State
 const loading = ref(true);
@@ -26,12 +26,12 @@ const episodes = ref([
   <div class="container">                                   
     <!-- LOADER SCREEN (LDERS WAVEFORM) -->
     <div v-if="loading" class="loader-screen">
-      <l-Waveform
+      <l-waveform
         size="70"
         stroke="5"
         speed="0.9"
         color="#8400ff"
-      ></l-Waveform>
+      ></l-waveform>
       <h2>Loading...</h2>
     </div>
 
