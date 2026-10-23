@@ -5,7 +5,7 @@ import { Search, Film, Tv, Home, Info, Phone, Instagram, Youtube, Send, Moon } f
 import HoMe from "@/components/HoMe.vue"
 import AccouNt from "@/components/AccouNt.vue"
 import SerIes from "@/components/SerIes.vue"
-import MoVie from '@/components/MoVie.vue'
+
 
 const router = useRouter()
 const navigation = ref('HoMe')
@@ -44,11 +44,7 @@ const handleSearch = () => {
               <Tv :size="18" /> Series
             </button>
           </li>
-              <li>
-            <button :class="{ active: navigation === 'SerIes' }" @click="navigation = 'MoVies'">
-              <Tv :size="18" /> Movies
-            </button>
-          </li>
+         
           <li>
             <button :class="{ active: navigation === 'About' }" @click="navigation = 'About'">
               <Info :size="18" /> About
