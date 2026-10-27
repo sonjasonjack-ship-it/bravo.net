@@ -1,21 +1,34 @@
 import { fileURLToPath, URL } from 'node:url'
-
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import vueDevTools from 'vite-plugin-vue-devtools'
+import { VitePWA } from 'vite-plugin-pwa' // <--- Shyiramo iyi
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    vue({
-      template: {
-        compilerOptions: {
-          // Ibi nibyo bibwira Vue ko tags zose zitangira na l- ari custom elements
-          isCustomElement: (tag) => tag.startsWith('l-')
-        }
+    vue(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      manifest: {
+        name: 'Bravo.net',
+        short_name: 'Bravo',
+        description: 'Movie Streaming Web App',
+        theme_color: '#0b0f19',
+        background_color: '#0b0f19',
+        display: 'standalone',
+        icons: [
+          {
+            src: '/pwa-192x192.png',
+            sizes: '192x192',
+            type: 'image/png'
+          },
+          {
+            src: '/pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png'
+          }
+        ]
       }
-    }),
-    vueDevTools(),
+    })
   ],
   resolve: {
     alias: {

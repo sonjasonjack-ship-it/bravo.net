@@ -35,9 +35,10 @@ const handleSearch = () => {
               <Home :size="18" /> Home
             </button>
           </li>
-          <li>
-            <button :class="{ active: navigation === 'AccouNt' }" @click="navigation = 'AccouNt'">
-              <Film :size="18" /> Movies
+         
+            <li>
+            <button :class="{ active: navigation === 'MoVies' }" @click="navigation = 'MoVies'">
+              <Info :size="18" /> Movies2
             </button>
           </li>
           <li>
@@ -46,9 +47,9 @@ const handleSearch = () => {
             </button>
           </li>
          
-          <li>
-            <button :class="{ active: navigation === 'MoVies' }" @click="navigation = 'MoVies'">
-              <Info :size="18" /> About
+         <li>
+            <button :class="{ active: navigation === 'AccouNt' }" @click="navigation = 'AccouNt'">
+              <Film :size="18" /> Movies
             </button>
           </li>
         </ul>
