@@ -1,7 +1,6 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { Search, Play, Calendar, Clock, Film, Users, Download } from "lucide-vue-next";
-import "ldrs/Waveform"; // Gushyiramo library ya loader
 
 // 1. Loading State
 const loading = ref(true);
@@ -23,15 +22,16 @@ const episodes = ref([
 </script>
 
 <template>
-  <div class="container">                                   
-    <!-- LOADER SCREEN (LDERS WAVEFORM) -->
+  <div class="container">                    
+    <!-- LOADER SCREEN (CSS WAVEFORM) -->
     <div v-if="loading" class="loader-screen">
-      <l-Waveform
-        size="70"
-        stroke="5"
-        speed="0.9"
-        color="#8400ff"
-      ></l-Waveform>
+      <div class="waveform-loader">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+      </div>
       <h2>Loading...</h2>
     </div>
 
@@ -135,13 +135,6 @@ const episodes = ref([
 </template>
 
 <style scoped>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
-}
-
 .container {
   min-height: 100vh;
   background: #0b0f19;
@@ -164,6 +157,36 @@ const episodes = ref([
   font-size: 1.2rem;
   letter-spacing: 1px;
   color: #94a3b8;
+}
+
+/* CSS WAVEFORM LOADER ANIMATION */
+.waveform-loader {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 50px;
+}
+
+.waveform-loader .bar {
+  width: 8px;
+  height: 100%;
+  background: #8400ff;
+  border-radius: 4px;
+  animation: wavePulse 1.2s infinite ease-in-out;
+}
+
+.waveform-loader .bar:nth-child(2) { animation-delay: -1.0s; }
+.waveform-loader .bar:nth-child(3) { animation-delay: -0.8s; }
+.waveform-loader .bar:nth-child(4) { animation-delay: -0.6s; }
+.waveform-loader .bar:nth-child(5) { animation-delay: -0.4s; }
+
+@keyframes wavePulse {
+  0%, 40%, 100% {
+    transform: scaleY(0.4);
+  }
+  20% {
+    transform: scaleY(1);
+  }
 }
 
 .word {
@@ -203,23 +226,20 @@ const episodes = ref([
   margin: 30px auto 0 auto;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
 }
-/* Container yagutse ya Download list */
+
 .down {
-  background: rgba(30, 41, 59, 0.6); /* Dark blue rounded card */
+  background: rgba(30, 41, 59, 0.6);
   backdrop-filter: blur(10px);
   border-radius: 16px;
   padding: 20px 30px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: white;
-  
-  /* Ibi bituma yaguka ikazagera ku ruhande rwose rw'ikirere cya page */
   width: 100%;
   max-width: 1350px; 
   margin: 16px auto;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
-/* Flex layout yo gutandukanya inyandiko na bouton ku mpande zombi */
 .hone {
   display: flex;
   justify-content: space-between;
@@ -239,7 +259,6 @@ const episodes = ref([
   color: #94a3b8;
 }
 
-/* Bouton nshya igaragara neza */
 .link-button {
   text-decoration: none;
   padding: 12px 28px;
@@ -367,24 +386,6 @@ const episodes = ref([
 .meta-info strong {
   font-size: 12px;
   color: #f8fafc;
-}
-
-.link-button {
-  text-decoration: none;
-  padding: 10px 20px;
-  border-radius: 10px;
-  background: #8400ff;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.3s;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.link-button:hover {
-  background: #7000df;
 }
 
 .section-header {

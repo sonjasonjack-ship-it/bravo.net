@@ -5,6 +5,7 @@ import { Search, Film, Tv, Home, Info, Phone, Instagram, Youtube, Send, Moon } f
 import HoMe from "@/components/HoMe.vue"
 import AccouNt from "@/components/AccouNt.vue"
 import SerIes from "@/components/SerIes.vue"
+import Movies from './components/MoVies.vue'
 
 
 const router = useRouter()
@@ -46,7 +47,7 @@ const handleSearch = () => {
           </li>
          
           <li>
-            <button :class="{ active: navigation === 'About' }" @click="navigation = 'About'">
+            <button :class="{ active: navigation === 'MoVies' }" @click="navigation = 'MoVies'">
               <Info :size="18" /> About
             </button>
           </li>
@@ -69,7 +70,7 @@ const handleSearch = () => {
     <main class="main-content">
 <HoMe v-if="navigation === 'HoMe'" @go-to-account="navigation = 'AccouNt'"></HoMe>
   <SerIes v-else-if="navigation === 'SerIes'" @go-to-account="navigation = 'AccouNt'"></SerIes>
-
+<Movies v-else-if="navigation==='MoVies'" @go-to-account="navigation = 'MoVies'"></Movies>
   <AccouNt v-else-if="navigation === 'AccouNt'"></AccouNt>
       <div v-else class="about-page">
         <h2>Abo Turi Bo (About Us)</h2>

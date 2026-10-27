@@ -1,3 +1,8 @@
+<script>
+export default{
+  name:"MoVies"
+}
+</script>
 <script setup>
 import { ref, computed } from 'vue'
 import { 
@@ -192,16 +197,24 @@ const filteredMovies = computed(() => {
 
 /* 1. HEADER BANNER STYLES */
 .header-banner {
+     background: linear-gradient(135deg, #2e1065 0%, #1e1b4b 40%, #030712 100%);
+  border-radius: 20px;
+  padding: 48px 40px;
+  margin: 20px 0 30px 80px;
   position: relative;
+  max-width: 1490px;
+  overflow: hidden;
+  border: 1px solid rgba(16, 185, 129, 0.15);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
+  /* position: relative;
   background: linear-gradient(135deg, #2e1065 0%, #1e1b4b 40%, #030712 100%);
   padding: 60px 20px 80px 20px;
   overflow: hidden;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05); */
 }
 
 .header-content {
-  max-width: 1200px;
-  margin: 0 auto;
+  max-width: 700px;
   position: relative;
   z-index: 2;
 }
@@ -290,6 +303,7 @@ const filteredMovies = computed(() => {
 
 /* 2. SEARCH & CONTROLS BAR STYLES */
 .search-controls-container {
+  margin-top: 140px;
   max-width: 1200px;
   margin: -35px auto 40px auto;
   padding: 0 20px;
@@ -298,6 +312,7 @@ const filteredMovies = computed(() => {
 }
 
 .search-controls-box {
+  margin-top: 100px;
   background: #0f172a;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 18px;
@@ -390,7 +405,7 @@ const filteredMovies = computed(() => {
 
 /* 3. MOVIES GRID & CARDS STYLES */
 .content-container {
-  max-width: 1200px;
+  max-width: 1490px;
   margin: 0 auto;
   padding: 0 20px;
 }
