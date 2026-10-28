@@ -1,12 +1,12 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { Search, Film, Tv, Home, Info, Phone, Instagram, Youtube, Send, Moon } from 'lucide-vue-next'
+import { Search, Film, Tv, Home, Info, Phone, Instagram, Youtube, Send, Moon ,Download} from 'lucide-vue-next'
 import HoMe from "@/components/HoMe.vue"
 import AccouNt from "@/components/AccouNt.vue"
 import SerIes from "@/components/SerIes.vue"
 import Movies from './components/MoVies.vue'
-
+import SearchPage from './components/SearchPage.vue'
 
 const router = useRouter()
 const navigation = ref('HoMe')
@@ -25,7 +25,7 @@ const handleSearch = () => {
     <!-- Navbar -->
     <header class="navbar-header">
       <nav class="navbar">
-        <a href="#" @click.prevent="navigation = 'HoMe'" class="logo">
+        <a href="C:\Users\HP\JA\frontend\src\components\SearchPage.vue" @click.prevent="navigation = 'SearchPage'" class="logo1">
           <span class="logo-accent">Bravo</span>.net
         </a>
 
@@ -38,7 +38,7 @@ const handleSearch = () => {
          
             <li>
             <button :class="{ active: navigation === 'MoVies' }" @click="navigation = 'MoVies'">
-              <Info :size="18" /> Movies2
+              <Film :size="18" /> Movies
             </button>
           </li>
           <li>
@@ -49,7 +49,12 @@ const handleSearch = () => {
          
          <li>
             <button :class="{ active: navigation === 'AccouNt' }" @click="navigation = 'AccouNt'">
-              <Film :size="18" /> Movies
+              <Download :size="18" /> Download
+            </button>
+          </li>
+          <li>
+            <button :class="{ active: navigation === 'SearchPage' }" @click="navigation = 'SearchPage'">
+              <Search :size="18" /> Search
             </button>
           </li>
         </ul>
@@ -71,6 +76,7 @@ const handleSearch = () => {
     <main class="main-content">
 <HoMe v-if="navigation === 'HoMe'" @go-to-account="navigation = 'AccouNt'"></HoMe>
   <SerIes v-else-if="navigation === 'SerIes'" @go-to-account="navigation = 'AccouNt'"></SerIes>
+  <SearchPage v-else-if="navigation === 'SearchPage'" @go-to-account="navigation = 'SearchPage'"></SearchPage>
 <Movies v-else-if="navigation==='MoVies'" @go-to-account="navigation = 'MoVies'"></Movies>
   <AccouNt v-else-if="navigation === 'AccouNt'"></AccouNt>
       <div v-else class="about-page">
@@ -96,7 +102,7 @@ const handleSearch = () => {
           <a href="#" class="social-btn whatsapp">
             <Phone :size="18" /> WhatsApp
           </a>
-          <a href="#" class="social-btn instagram">
+          <a href="https://www.instagram.com/ni.ja45/" class="social-btn instagram">
             <Instagram :size="18" /> Instagram
           </a>
           <a href="#" class="social-btn youtube">
@@ -108,7 +114,7 @@ const handleSearch = () => {
             </svg> TikTok
           </a>
           <a href="#" class="social-btn telegram">
-            <Send :size="18" /> Telegram
+            <Send :size="18" />Facebook
           </a>
         </div>
       </div>
@@ -132,7 +138,7 @@ const handleSearch = () => {
 }
 .navbar-header { background: #111827; border-bottom: 1px solid rgba(255, 255, 255, 0.08); position: sticky; top: 0; z-index: 100; }
 .navbar { max-width: 1400px; margin: 0 auto; height: 70px; display: flex; justify-content: space-between; align-items: center; padding: 0 24px; }
-.logo { font-size: 1.6rem; font-weight: 800; color: #ffffff; text-decoration: none; }
+.logo1 { font-size: 1.6rem; font-weight: 800; color: #ffffff; text-decoration: none; }
 .logo-accent { color: #a855f7; }
 .menu { display: flex; list-style: none; gap: 12px; }
 .menu button { display: flex; align-items: center; gap: 8px; background: transparent; border: none; color: #9ca3af; font-size: 0.95rem; font-weight: 500; padding: 8px 16px; border-radius: 20px; cursor: pointer; transition: all 0.2s ease; }

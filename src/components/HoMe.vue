@@ -113,6 +113,7 @@ const filteredSeries = computed(() => {
     <!-- TOP HEADER / BRANDING -->
     <section class="start-banner">
       <div class="logo">
+        <img src="C:\Users\HP\JA\frontend\src\assets\movies\COOL LOGO -BRAVO DESIGNS.jpg" alt="" style="height: 100px;border-radius: 50%; ">
         <h1 class="brand-title">Bravo.net</h1>
       </div>
       <h2>Download Free Agasobanuye Series and Movies</h2>
@@ -186,7 +187,7 @@ const filteredSeries = computed(() => {
             type="text" 
             v-model="searchQuery" 
             @keyup.enter="handleSearch"
-            placeholder="Search series by title..." 
+            placeholder="Search hot movies & series by title..." 
           />
         </div>
 
@@ -235,7 +236,9 @@ const filteredSeries = computed(() => {
         </div>
       </div>
     </section>
-
+ <div class="section-title-header">
+        <h2>  Hot Movies</h2>
+      </div>
     <!-- SERIES DISPLAY SECTION -->
     <main class="content-section">
       <!-- No Results State -->
@@ -624,11 +627,27 @@ const filteredSeries = computed(() => {
 
 .brand-title {
   margin-left: 60px;
-  font-size: 4rem;
+  font-size: 
+  4rem;
   font-weight: 1000;
   color: white;
 }
+.brand-title {
+  animation: tracking-in-expand 1s cubic-bezier(0.215, 0.610, 0.355, 1.000) both;
+}
 
+@keyframes brand-title {
+  0% {
+    letter-spacing: -0.5em;
+    opacity: 0;
+  }
+  40% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+}
 .purple-dot {
   color: #a855f7;
 }

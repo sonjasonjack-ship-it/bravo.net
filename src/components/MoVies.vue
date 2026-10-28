@@ -52,31 +52,26 @@ const filteredMovies = computed(() => {
 <template>
   <div class="movies-page">
     
-    <!-- HEADER SECTION (Nk'uko biri ku ishusho) -->
+    <!-- HEADER SECTION -->
     <header class="header-banner">
-      <!-- Background Clapperboard Icon Effects -->
       <Clapperboard class="bg-icon icon-left" :size="180" />
       <Film class="bg-icon icon-right" :size="200" />
 
       <div class="header-content">
-        <!-- Badge -->
         <div class="collection-badge">
           <span class="purple-dot"></span>
           <span>Movie Collection</span>
         </div>
 
-        <!-- Title & Icon -->
         <div class="title-row">
           <h1 class="gradient-title">Movies</h1>
           <Star class="star-outline-icon" :size="36" />
         </div>
 
-        <!-- Description -->
         <p class="header-desc">
           Discover amazing films from around the world. Stream and download your favorite movies in HD quality.
         </p>
 
-        <!-- Feature Badges -->
         <div class="header-tags">
           <div class="tag-box">
             <TrendingUp :size="15" color="#c084fc" />
@@ -96,11 +91,9 @@ const filteredMovies = computed(() => {
       </div>
     </header>
 
-    <!-- SEARCH & CONTROLS BAR (Nk'uko biri ku ishusho) -->
+    <!-- SEARCH & CONTROLS BAR -->
     <div class="search-controls-container">
       <div class="search-controls-box">
-        
-        <!-- Search Input -->
         <div class="input-wrapper">
           <Search :size="18" class="search-icon" />
           <input 
@@ -110,7 +103,6 @@ const filteredMovies = computed(() => {
           />
         </div>
 
-        <!-- Actions (Filters & Layout View Switcher) -->
         <div class="actions-wrapper">
           <button class="filters-btn">
             <SlidersHorizontal :size="16" />
@@ -134,18 +126,15 @@ const filteredMovies = computed(() => {
             </button>
           </div>
         </div>
-
       </div>
     </div>
 
     <!-- MOVIES CONTENT GRID -->
     <main class="content-container">
-      <!-- No Results Message -->
       <div v-if="filteredMovies.length === 0" class="no-movies">
         <p>Nta film ibonetse yihuye n'ibyo ushakisha "{{ searchQuery }}".</p>
       </div>
 
-      <!-- Grid Cards -->
       <div 
         v-else 
         :class="isGridView ? 'movies-grid' : 'movies-list-layout'"
@@ -156,13 +145,11 @@ const filteredMovies = computed(() => {
           class="movie-card"
           :class="{ 'active-hover': index === 1 }"
         >
-          <!-- Poster -->
           <div class="poster-wrapper">
             <img :src="movie.poster" :alt="movie.title" class="poster-img" />
             <span class="translator-badge">{{ movie.translator }}</span>
             <span class="year-badge">{{ movie.year }}</span>
 
-            <!-- Play Overlay -->
             <div class="play-overlay">
               <div class="play-circle">
                 <Play :size="24" fill="white" color="white" />
@@ -170,7 +157,6 @@ const filteredMovies = computed(() => {
             </div>
           </div>
 
-          <!-- Movie Info -->
           <div class="movie-info">
             <h3 class="movie-title">{{ movie.title }}</h3>
             <p class="translator-sub">agasobanuye by {{ movie.translator.toLowerCase() }}</p>
@@ -193,24 +179,20 @@ const filteredMovies = computed(() => {
   color: white;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   padding-bottom: 60px;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 /* 1. HEADER BANNER STYLES */
 .header-banner {
-     background: linear-gradient(135deg, #2e1065 0%, #1e1b4b 40%, #030712 100%);
-  border-radius: 20px;
-  padding: 48px 40px;
-  margin: 20px 0 30px 80px;
+  background: linear-gradient(135deg, #2e1065 0%, #1e1b4b 40%, #030712 100%);
+  border-radius: 16px;
+  padding: 24px 16px;
+  margin: 12px;
   position: relative;
-  max-width: 1490px;
   overflow: hidden;
   border: 1px solid rgba(16, 185, 129, 0.15);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
-  /* position: relative;
-  background: linear-gradient(135deg, #2e1065 0%, #1e1b4b 40%, #030712 100%);
-  padding: 60px 20px 80px 20px;
-  overflow: hidden;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05); */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
 }
 
 .header-content {
@@ -219,118 +201,110 @@ const filteredMovies = computed(() => {
   z-index: 2;
 }
 
-/* Background Icons */
 .bg-icon {
   position: absolute;
   color: rgba(255, 255, 255, 0.03);
   pointer-events: none;
 }
-.icon-left { top: 20px; left: -30px; }
-.icon-right { top: -20px; right: 20px; }
+.icon-left { top: 10px; left: -20px; }
+.icon-right { top: -10px; right: 10px; }
 
-/* Badge */
 .collection-badge {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 5px 14px;
+  padding: 4px 12px;
   border-radius: 20px;
-  font-size: 13px;
+  font-size: 12px;
   color: #e9d5ff;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 }
 
 .purple-dot {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   background-color: #a855f7;
   border-radius: 50%;
 }
 
-/* Title */
 .title-row {
   display: flex;
   align-items: center;
-  gap: 15px;
-  margin-bottom: 15px;
+  gap: 12px;
+  margin-bottom: 10px;
 }
 
 .gradient-title {
-  font-size: 56px;
+  font-size: 30px;
   font-weight: 800;
   font-family: Georgia, serif;
   background: linear-gradient(to right, #f472b6, #c084fc, #818cf8);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  line-height: 1;
+  line-height: 1.1;
 }
 
 .star-outline-icon {
   color: #a855f7;
   opacity: 0.8;
+  width: 26px;
+  height: 26px;
 }
 
-/* Desc */
 .header-desc {
   color: #cbd5e1;
-  font-size: 16px;
-  max-width: 520px;
-  line-height: 1.6;
-  margin-bottom: 30px;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 16px;
 }
 
-/* Header Tags */
 .header-tags {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
 .tag-box {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 8px 16px;
+  padding: 6px 12px;
   border-radius: 10px;
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 600;
   color: #e2e8f0;
 }
 
 /* 2. SEARCH & CONTROLS BAR STYLES */
 .search-controls-container {
-  margin-top: 140px;
-  max-width: 1200px;
-  margin: -35px auto 40px auto;
-  padding: 0 20px;
+  margin: -15px 12px 25px 12px;
   position: relative;
   z-index: 10;
 }
 
 .search-controls-box {
-  margin-top: 100px;
   background: #0f172a;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 18px;
-  padding: 10px 14px;
+  border-radius: 16px;
+  padding: 12px;
   display: flex;
-  align-items: center;
-  gap: 15px;
+  flex-direction: column;
+  gap: 12px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
 }
 
 .input-wrapper {
   position: relative;
-  flex-grow: 1;
+  width: 100%;
 }
 
 .search-icon {
   position: absolute;
-  left: 16px;
+  left: 14px;
   top: 50%;
   transform: translateY(-50%);
   color: #64748b;
@@ -340,10 +314,10 @@ const filteredMovies = computed(() => {
   width: 100%;
   background: #1e293b;
   border: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 12px 16px 12px 46px;
+  padding: 12px 14px 12px 42px;
   border-radius: 12px;
   color: white;
-  font-size: 14px;
+  font-size: 13px;
   outline: none;
   transition: 0.3s;
 }
@@ -355,26 +329,25 @@ const filteredMovies = computed(() => {
 .actions-wrapper {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
 }
 
 .filters-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: #1e293b;
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: white;
-  padding: 10px 18px;
+  padding: 10px 14px;
   border-radius: 10px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: 0.3s;
-}
-
-.filters-btn:hover {
-  background: #334155;
+  flex-grow: 1;
+  justify-content: center;
 }
 
 .view-switcher {
@@ -389,13 +362,12 @@ const filteredMovies = computed(() => {
   background: transparent;
   border: none;
   color: #64748b;
-  padding: 7px 10px;
+  padding: 7px 12px;
   border-radius: 7px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: 0.3s;
 }
 
 .view-switcher button.active {
@@ -403,40 +375,37 @@ const filteredMovies = computed(() => {
   color: white;
 }
 
-/* 3. MOVIES GRID & CARDS STYLES */
+/* 3. MOVIES GRID & CARDS STYLES (Kuri Mobile ziba 1 Column) */
 .content-container {
-  max-width: 1490px;
-  margin: 0 auto;
-  padding: 0 20px;
+  width: 100%;
+  padding: 0 12px;
 }
 
 .movies-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 22px;
+  grid-template-columns: 1fr; /* Kuri Mobile buri card iba imwe ku murongo */
+  gap: 14px;
 }
 
 .movies-list-layout {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 12px;
 }
 
 .movie-card {
   background-color: #0f172a;
-  border-radius: 16px;
+  border-radius: 14px;
   overflow: hidden;
   position: relative;
-  border: 2px solid transparent;
-  transition: all 0.3s ease;
-  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.05);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .poster-wrapper {
   position: relative;
   width: 100%;
-  height: 270px;
+  height: 220px; /* Ubunini bwiza kuri mobile card imwe */
 }
 
 .poster-img {
@@ -445,7 +414,6 @@ const filteredMovies = computed(() => {
   object-fit: cover;
 }
 
-/* Badges */
 .translator-badge {
   position: absolute;
   top: 10px;
@@ -472,7 +440,6 @@ const filteredMovies = computed(() => {
   border-radius: 6px;
 }
 
-/* Play Overlay & Active/Hover */
 .play-overlay {
   position: absolute;
   inset: 0;
@@ -485,22 +452,14 @@ const filteredMovies = computed(() => {
 }
 
 .play-circle {
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   background-color: #a855f7;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 0 20px rgba(168, 85, 247, 0.7);
-  transform: scale(0.8);
-  transition: transform 0.3s ease;
-}
-
-.movie-card:hover {
-  border-color: #a855f7;
-  box-shadow: 0 0 25px rgba(168, 85, 247, 0.35);
-  transform: translateY(-6px);
 }
 
 .movie-card:hover .play-overlay,
@@ -508,17 +467,6 @@ const filteredMovies = computed(() => {
   opacity: 1;
 }
 
-.movie-card:hover .play-circle,
-.movie-card.active-hover .play-circle {
-  transform: scale(1);
-}
-
-.movie-card.active-hover {
-  border-color: #a855f7;
-  box-shadow: 0 0 25px rgba(168, 85, 247, 0.35);
-}
-
-/* Movie Info Bottom */
 .movie-info {
   padding: 12px;
   background-color: #0f172a;
@@ -537,7 +485,7 @@ const filteredMovies = computed(() => {
 .translator-sub {
   color: #94a3b8;
   font-size: 11px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .movie-stats {
@@ -550,20 +498,58 @@ const filteredMovies = computed(() => {
 
 .no-movies {
   text-align: center;
-  padding: 50px 20px;
+  padding: 40px 20px;
   color: #94a3b8;
   background: #0f172a;
   border-radius: 16px;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .search-controls-box {
-    flex-direction: column;
-    align-items: stretch;
+/* 4. MEDIA QUERIES KURI PC (Laptop & Desktop) */
+@media (min-width: 768px) {
+  .header-banner {
+    padding: 48px 40px;
+    margin: 20px auto 30px auto;
+    max-width: 1450px;
+    border-radius: 20px;
   }
-  .actions-wrapper {
-    justify-content: space-between;
+  .gradient-title {
+    font-size: 52px;
+  }
+  .header-desc {
+    font-size: 15px;
+  }
+  .search-controls-container {
+    max-width: 1200px;
+    margin: -35px auto 40px auto;
+  }
+  .search-controls-box {
+    flex-direction: row;
+    align-items: center;
+    padding: 10px 14px;
+  }
+  .filters-btn {
+    flex-grow: 0;
+    padding: 10px 18px;
+  }
+  .content-container {
+    max-width: 1450px;
+    margin: 0 auto;
+  }
+  .movies-grid {
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); /* Kuri PC ziba nyinshi nziza */
+    gap: 22px;
+  }
+  .poster-wrapper {
+    height: 270px;
+  }
+  .movie-title {
+    font-size: 14px;
+  }
+  .translator-sub {
+    font-size: 11px;
+  }
+  .movie-stats {
+    font-size: 11px;
   }
 }
 </style>
