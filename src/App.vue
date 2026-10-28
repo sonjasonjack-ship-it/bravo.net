@@ -25,7 +25,7 @@ const handleSearch = () => {
     <!-- Navbar -->
     <header class="navbar-header">
       <nav class="navbar">
-        <a href="C:\Users\HP\JA\frontend\src\components\SearchPage.vue" @click.prevent="navigation = 'SearchPage'" class="logo1">
+        <a href="#" @click.prevent="navigation = 'SearchPage'" class="logo1">
           <span class="logo-accent">Bravo</span>.net
         </a>
 
