@@ -3,219 +3,235 @@ export default{
   name:"SearchPage"
 }
 </script>
-<script setup>
-import { ref, computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { Search, Play } from 'lucide-vue-next'
-
-const route = useRoute()
-const router = useRouter()
-
-const searchQuery = ref(route.query.q || '')
-
-// Amakuru yose ya za film na series
-const allItems = ref([
-  { id: 1, title: "Spider Man: Brand New Day", epsod: "FULL MOVIE", genre: "American", image: "/src/assets/movies/spider.webp" },
-  { id: 6, title: "The Brink Of War", epsod: "Action", genre: "Action", image: "/src/assets/movies/brink war.webp" },
-  { id: 7, title: "The CONFINEMENT", epsod: "Action", genre: "Action", image: "/src/assets/movies/Confinement.webp" },
-  { id: 8, title: "Minions & Monster", epsod: "Cartoon", genre: "Cartoon", image: "/src/assets/movies/minions.webp" },
-  { id: 9, title: "Teen Titans Go!", epsod: "Cartoon", genre: "Cartoon", image: "/src/assets/movies/teen.webp" },
-  { id: 101, title: "A Shop of Killer", epsod: "EPISODE 8", genre: "Episode", image: "/src/assets/movies/shop.webp" },
-  { id: 102, title: "Umthetho", epsod: "EPISODE 12", genre: "Episode", image: "/src/assets/movies/umthetho.webp" },
-  { id: 103, title: "Lioness", epsod: "EPISODE 10", genre: "Episode", image: "/src/assets/movies/lioness.webp" },
-  { id: 104, title: "A Bona Fide Killer", epsod: "EPISODE 13", genre: "Episode", image: "/src/assets/movies/bona.webp" }
-])
-
-// Gushakisha ibihura n'ibyo umukoresha yanditse
-const searchResults = computed(() => {
-  const query = (route.query.q || searchQuery.value || '').toLowerCase()
-  if (!query) return allItems.value
-  return allItems.value.filter(item => 
-    item.title.toLowerCase().includes(query) || 
-    item.genre.toLowerCase().includes(query)
-  )
-})
-
-const handleNewSearch = () => {
-  if (searchQuery.value.trim()) {
-    router.push({ path: '/search', query: { q: searchQuery.value } })
-  }
-}
-</script>
-
 <template>
-  <div class="search-page-container">
-    <!-- Header ya Search -->
-    <div class="search-hero">
-      <h1>Shakisha Film cyangwa Series</h1>
-      <p>Bona ibisubizo byose bijyanye n'ibyo ukeneye mu buryo bwihuse.</p>
+  <div class="search-container">
+    <!-- Search Bar Section -->
+    <header class="search-header">
+      <h1>Shakisha Films na Series</h1>
       
-      <div class="search-bar-wrapper">
-        <Search :size="20" class="s-icon" />
-        <input 
-          type="text" 
-          v-model="searchQuery" 
-          @keyup.enter="handleNewSearch"
-          placeholder="Andika izina rya film cyangwa series..." 
-        />
-        <button @click="handleNewSearch">Shakisha</button>
-      </div>
-    </div>
+      <div class="search-controls">
+        <!-- Input field ya search -->
+        <div class="input-wrapper">
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Andika izina ry'icyo ushaka..."
+            class="search-input"
+          />
+        </div>
 
-    <!-- Ibisubizo byabonetse -->
-    <div class="results-section">
-      <div class="section-title-header">
-        <h2>Ibyavuye mu gushakisha: "<span class="query-text">{{ route.query.q || 'Byose' }}</span>"</h2>
+        <!-- Filter ya Type (All, Movies, Series) -->
+        <div class="filter-buttons">
+          <button 
+            :class="{ active: selectedType === 'all' }" 
+            @click="selectedType = 'all'"
+          >
+            Bose
+          </button>
+          <button 
+            :class="{ active: selectedType === 'movie' }" 
+            @click="selectedType = 'movie'"
+          >
+            Films
+          </button>
+          <button 
+            :class="{ active: selectedType === 'series' }" 
+            @click="selectedType = 'series'"
+          >
+            Series
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content Grid -->
+    <main class="results-section">
+      <!-- Mugihe nta bisubizo bibonetse -->
+      <div v-if="filteredMedia.length === 0" class="no-results">
+        <p>Nta film cyangwa series ibonetse ku izina "{{ searchQuery }}"</p>
       </div>
 
-      <div v-if="searchResults.length === 0" class="no-results">
-        <p>Nta bikoresho cyangwa film zibonetse zihuye n'ijambo ushakishije.</p>
-      </div>
-
-      <div v-else class="cards-grid">
-        <div v-for="item in searchResults" :key="item.id" class="movie-card">
-          <div class="card-image">
-            <img :src="item.image" :alt="item.title" />
-            <span class="badge">{{ item.epsod }}</span>
+      <!-- Grid y'Ibisubizo -->
+      <div v-else class="media-grid">
+        <div 
+          v-for="item in filteredMedia" 
+          :key="item.id" 
+          class="media-card"
+        >
+          <div class="poster-wrapper">
+            <img :src="item.poster" :alt="item.title" class="poster-img" />
+            <span class="badge" :class="item.type">
+              {{ item.type === 'movie' ? 'Film' : 'Series' }}
+            </span>
           </div>
-          <div class="card-details">
+          
+          <div class="media-info">
             <h3>{{ item.title }}</h3>
-            <div class="card-footer">
-              <span class="genre">{{ item.genre }}</span>
-              <button class="watch-btn"><Play :size="14" fill="white" /> Reba</button>
+            <div class="meta">
+              <span>{{ item.year }}</span>
+              <span class="rating">⭐ {{ item.rating }}</span>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </main>
   </div>
 </template>
 
+<script setup>
+import { ref, computed } from 'vue'
+
+// Search state
+const searchQuery = ref('')
+const selectedType = ref('all') // 'all', 'movie', 'series'
+
+// Dummy Data (Muri real app aha wakoresha API nka TMDB)
+const mediaList = ref([
+  {
+    id: 1,
+    title: 'Inception',
+    type: 'movie',
+    year: 2010,
+    rating: 8.8,
+    poster: 'https://via.placeholder.com/300x450?text=Inception'
+  },
+  {
+    id: 2,
+    title: 'Breaking Bad',
+    type: 'series',
+    year: 2008,
+    rating: 9.5,
+    poster: 'https://via.placeholder.com/300x450?text=Breaking+Bad'
+  },
+  {
+    id: 3,
+    title: 'The Dark Knight',
+    type: 'movie',
+    year: 2008,
+    rating: 9.0,
+    poster: 'https://via.placeholder.com/300x450?text=The+Dark+Knight'
+  },
+  {
+    id: 4,
+    title: 'Stranger Things',
+    type: 'series',
+    year: 2016,
+    rating: 8.7,
+    poster: 'https://via.placeholder.com/300x450?text=Stranger+Things'
+  }
+])
+
+// Filter Logic ikora real-time
+const filteredMedia = computed(() => {
+  return mediaList.value.filter(item => {
+    // Check izina
+    const matchesQuery = item.title
+      .toLowerCase()
+      .includes(searchQuery.value.toLowerCase().trim())
+    
+    // Check type (Movie/Series/All)
+    const matchesType = selectedType.value === 'all' || item.type === selectedType.value
+
+    return matchesQuery && matchesType
+  })
+})
+</script>
+
 <style scoped>
-.search-page-container {
-  max-width: 1300px;
+.search-container {
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 30px 20px;
-  color: white;
+  padding: 2rem 1rem;
+  color: #ffffff;
+  background-color: #121212;
+  min-height: 100vh;
 }
 
-.search-hero {
+.search-header {
+  margin-bottom: 2rem;
   text-align: center;
-  padding: 40px 20px;
-  background: linear-gradient(135deg, rgba(132, 0, 255, 0.15), rgba(17, 24, 39, 0.6));
-  border-radius: 24px;
-  margin-bottom: 40px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.search-hero h1 {
-  font-size: 2.5rem;
-  font-weight: 800;
-  margin-bottom: 10px;
+.search-header h1 {
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
 }
 
-.search-hero p {
-  color: #94a3b8;
-  font-size: 1.1rem;
-  margin-bottom: 25px;
-}
-
-.search-bar-wrapper {
-  position: relative;
-  max-width: 600px;
-  margin: 0 auto;
+.search-controls {
   display: flex;
-  gap: 10px;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
 }
 
-.search-bar-wrapper input {
-  flex: 1;
-  padding: 14px 20px 14px 48px;
-  border-radius: 30px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: #1e293b;
-  color: white;
+.input-wrapper {
+  width: 100%;
+  max-width: 500px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.8rem 1.2rem;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background-color: #1e1e1e;
+  color: #fff;
   font-size: 1rem;
   outline: none;
+  transition: border-color 0.3s;
 }
 
-.search-bar-wrapper .s-icon {
-  position: absolute;
-  left: 18px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #94a3b8;
+.search-input:focus {
+  border-color: #e50914; /* Netflix Red */
 }
 
-.search-bar-wrapper button {
-  padding: 0 24px;
-  border-radius: 30px;
-  border: none;
-  background: #8400ff;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.search-bar-wrapper button:hover {
-  background: #7000df;
-}
-
-.section-title-header {
+.filter-buttons {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  position: relative;
-  padding-left: 16px;
+  gap: 0.5rem;
 }
 
-.section-title-header::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 5px;
-  height: 24px;
-  background: #3b82f6;
-  border-radius: 4px;
+.filter-buttons button {
+  padding: 0.5rem 1.2rem;
+  border-radius: 20px;
+  border: 1px solid #333;
+  background-color: #1e1e1e;
+  color: #aaa;
+  cursor: pointer;
+  transition: all 0.3s;
 }
 
-.section-title-header h2 {
-  font-size: 1.5rem;
-  font-weight: 700;
+.filter-buttons button.active,
+.filter-buttons button:hover {
+  background-color: #e50914;
+  color: #fff;
+  border-color: #e50914;
 }
 
-.query-text {
-  color: #a855f7;
-}
-
-.cards-grid {
+/* Grid Layout */
+.media-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
 }
 
-.movie-card {
-  background: #1e293b;
-  border-radius: 16px;
+.media-card {
+  background-color: #1e1e1e;
+  border-radius: 8px;
   overflow: hidden;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.3s ease;
 }
 
-.movie-card:hover {
+.media-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
 }
 
-.card-image {
+.poster-wrapper {
   position: relative;
-  height: 280px;
+  width: 100%;
+  aspect-ratio: 2 / 3;
 }
 
-.card-image img {
+.poster-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -225,56 +241,43 @@ const handleNewSearch = () => {
   position: absolute;
   top: 10px;
   right: 10px;
-  background: #8400ff;
-  color: white;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
   font-size: 0.75rem;
-  font-weight: 700;
-  padding: 4px 8px;
-  border-radius: 6px;
+  font-weight: bold;
+  text-transform: uppercase;
 }
 
-.card-details {
-  padding: 16px;
+.badge.movie {
+  background-color: #0284c7;
 }
 
-.card-details h3 {
+.badge.series {
+  background-color: #16a34a;
+}
+
+.media-info {
+  padding: 1rem;
+}
+
+.media-info h3 {
   font-size: 1rem;
-  font-weight: 600;
+  margin: 0 0 0.5rem 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-bottom: 12px;
 }
 
-.card-footer {
+.meta {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-}
-
-.genre {
   font-size: 0.85rem;
-  color: #94a3b8;
-}
-
-.watch-btn {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: #8400ff;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 8px;
-  cursor: pointer;
+  color: #aaa;
 }
 
 .no-results {
   text-align: center;
-  padding: 50px;
-  background: #1e293b;
-  border-radius: 12px;
-  color: #94a3b8;
-  font-size: 1.1rem;
+  padding: 3rem;
+  color: #888;
 }
 </style>
