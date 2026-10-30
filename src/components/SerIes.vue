@@ -1,55 +1,65 @@
-
 <script setup>
-import { ref } from 'vue';
-import { Play, Search, ChevronLeft, ChevronRight } from 'lucide-vue-next';
+import { ref, onMounted } from 'vue';
+import { 
+  Play, 
+  ChevronLeft, 
+  ChevronRight, 
+  TrendingUp, 
+  Clock, 
+  Star, 
+  Tv 
+} from 'lucide-vue-next';
 
-// 1. Reactive States
-const searchQuery = ref('');
-const selectedGenre = ref('All');
-const genres = ['All', 'Action', 'Episode', 'American', 'Cartoon'];
+// TMDB API Configuration
+const TMDB_API_KEY = '6c67c21e5caa5b29285f37225c07aec9';
+const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
-// 2. Abasobanuzi batandukanye buri umwe ufite film 7 n'uburyo bwa Horizontal Scroll
+// 1. Abasobanuzi batandukanye bazuzwamo data zavuye muri TMDB API
 const translators = ref([
   {
     id: 1,
     name: "Agasobanuye by Perfect",
-    movies: [
-      { id: 101, title: "Spider Man: Brand New Day", epsod: "FULL MOVIE", genre: "American", image: "/src/assets/movies/spider.webp" },
-      { id: 102, title: "The Brink Of War", epsod: "ACTION", genre: "Action", image: "/src/assets/movies/brink war.webp" },
-      { id: 103, title: "A Bona Fide Killer", epsod: "EPISODE 13", genre: "Episode", image: "/src/assets/movies/bona.webp" },
-      { id: 104, title: "The Silo", epsod: "EPISODE 10", genre: "Sci-Fi", image: "/src/assets/movies/silo.webp" },
-      { id: 105, title: "Death's Game", epsod: "EPISODE 8", genre: "Thriller", image: "/src/assets/movies/death.webp" },
-      { id: 106, title: "The CONFINEMENT", epsod: "ACTION", genre: "Action", image: "/src/assets/movies/Confinement.webp" },
-      { id: 107, title: "Minions & Monster", epsod: "CARTOON", genre: "Cartoon", image: "/src/assets/movies/minions.webp" }
-    ]
+    endpoint: `${TMDB_BASE_URL}/trending/tv/week?api_key=${TMDB_API_KEY}`,
+    movies: []
   },
   {
     id: 2,
     name: "Agasobanuye by Yago",
-    movies: [
-      { id: 201, title: "Teen Titans Go!", epsod: "CARTOON", genre: "Cartoon", image: "/src/assets/movies/teen.webp" },
-      { id: 202, title: "A Shop of Killer", epsod: "EPISODE 8", genre: "Action", image: "/src/assets/movies/shop.webp" },
-      { id: 203, title: "Umthetho", epsod: "EPISODE 12", genre: "Drama", image: "/src/assets/movies/umthetho.webp" },
-      { id: 204, title: "Lioness", epsod: "EPISODE 10", genre: "Action", image: "/src/assets/movies/lioness.webp" },
-      { id: 205, title: "Spider Man: Brand New Day", epsod: "FULL MOVIE", genre: "American", image: "/src/assets/movies/spider.webp" },
-      { id: 206, title: "The Brink Of War", epsod: "ACTION", genre: "Action", image: "/src/assets/movies/brink war.webp" },
-      { id: 207, title: "A Bona Fide Killer", epsod: "EPISODE 13", genre: "Episode", image: "/src/assets/movies/bona.webp" }
-    ]
+    endpoint: `${TMDB_BASE_URL}/tv/popular?api_key=${TMDB_API_KEY}`,
+    movies: []
   },
   {
     id: 3,
     name: "Agasobanuye by Rocky",
-    movies: [
-      { id: 301, title: "The Silo", epsod: "EPISODE 10", genre: "Sci-Fi", image: "/src/assets/movies/silo.webp" },
-      { id: 302, title: "Death's Game", epsod: "EPISODE 8", genre: "Thriller", image: "/src/assets/movies/death.webp" },
-      { id: 303, title: "The CONFINEMENT", epsod: "ACTION", genre: "Action", image: "/src/assets/movies/Confinement.webp" },
-      { id: 304, title: "Minions & Monster", epsod: "CARTOON", genre: "Cartoon", image: "/src/assets/movies/minions.webp" },
-      { id: 305, title: "Teen Titans Go!", epsod: "CARTOON", genre: "Cartoon", image: "/src/assets/movies/teen.webp" },
-      { id: 306, title: "A Shop of Killer", epsod: "EPISODE 8", genre: "Action", image: "/src/assets/movies/shop.webp" },
-      { id: 307, title: "Umthetho", epsod: "EPISODE 12", genre: "Drama", image: "/src/assets/movies/umthetho.webp" }
-    ]
+    endpoint: `${TMDB_BASE_URL}/tv/top_rated?api_key=${TMDB_API_KEY}`,
+    movies: []
   }
 ]);
+
+// Gukurura data zose za TMDB kuri buri musobanuzi
+const fetchTranslatorsData = async () => {
+  try {
+    for (let translator of translators.value) {
+      const response = await fetch(translator.endpoint);
+      const data = await response.json();
+
+      translator.movies = (data.results || []).slice(0, 8).map(item => ({
+        id: item.id,
+        title: item.name || item.title,
+        epsod: 'SERIES',
+        genre: 'Episode',
+        image: item.poster_path ? `${IMAGE_BASE_URL}${item.poster_path}` : 'https://via.placeholder.com/500x750?text=No+Poster'
+      }));
+    }
+  } catch (error) {
+    console.error('Ikibazo mu gukurura data za TMDB:', error);
+  }
+};
+
+onMounted(() => {
+  fetchTranslatorsData();
+});
 
 // Gukoresha scroll ibumoso cyangwa iburyo kuri buri musobanuzi
 const scrollLeft = (containerId) => {
@@ -66,6 +76,7 @@ const scrollRight = (containerId) => {
   }
 };
 </script>
+
 <template>
   <div class="series-page">
     <!-- HERO HEADER SECTION (TEAL EMERALD STYLE) -->
@@ -108,7 +119,7 @@ const scrollRight = (containerId) => {
       </div>
     </header>
 
-  
+    <!-- TRANSLATORS HORIZONTAL SCROLL SECTIONS -->
     <div class="translators-container">
       <div v-for="translator in translators" :key="translator.id" class="translator-section">
         <div class="translator-header">
@@ -123,10 +134,11 @@ const scrollRight = (containerId) => {
           </div>
         </div>
 
+        <!-- Horizontal Scroll Row -->
         <div :id="`scroll-row-${translator.id}`" class="horizontal-scroll-row">
           <div v-for="movie in translator.movies" :key="movie.id" class="movie-card">
             <div class="card-image">
-              <img :src="movie.image" :alt="movie.title" />
+              <img :src="movie.image" :alt="movie.title" loading="lazy" />
               <span class="badge">{{ movie.epsod }}</span>
             </div>
             <div class="card-details">
@@ -407,9 +419,6 @@ const scrollRight = (containerId) => {
   }
   .featured-title {
     font-size: 2.8rem;
-  }
-  .search-box input {
-    width: 100%;
   }
 }
 </style>
