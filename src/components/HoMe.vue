@@ -12,7 +12,7 @@ import {
 const router = useRouter();
 
 // TMDB API Configuration
-const TMDB_API_KEY = 'YOUR_TMDB_API_KEY_HERE'; // Shyiramo API Key yawe ya TMDB hano
+const TMDB_API_KEY = '6c67c21e5caa5b29285f37225c07aec9'; // Shyiramo API Key yawe ya TMDB hano
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
