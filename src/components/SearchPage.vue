@@ -7,7 +7,7 @@ export default{
   <div class="search-container">
     <!-- Search Bar Section -->
     <header class="search-header">
-      <h1>Shakisha Films na Series</h1>
+      <h1>Search Films and Series here</h1>
       
       <div class="search-controls">
         <!-- Input field ya search -->
@@ -15,7 +15,7 @@ export default{
           <input
             v-model="searchQuery"
             type="text"
-            placeholder="Andika izina ry'icyo ushaka..."
+            placeholder="Search name of moveis..."
             class="search-input"
           />
         </div>
@@ -26,7 +26,7 @@ export default{
             :class="{ active: selectedType === 'all' }" 
             @click="selectedType = 'all'"
           >
-            Bose
+            all
           </button>
           <button 
             :class="{ active: selectedType === 'movie' }" 
@@ -48,7 +48,7 @@ export default{
     <main class="results-section">
       <!-- Mugihe nta bisubizo bibonetse -->
       <div v-if="filteredMedia.length === 0" class="no-results">
-        <p>Nta film cyangwa series ibonetse ku izina "{{ searchQuery }}"</p>
+        <p>no result😢😫❌‼ "{{ searchQuery }}"</p>
       </div>
 
       <!-- Grid y'Ibisubizo -->

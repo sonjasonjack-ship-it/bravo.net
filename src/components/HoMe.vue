@@ -1,111 +1,83 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { 
   Search, 
   Play, 
-  TrendingUp, 
-  Clock, 
-  Star, 
   SlidersHorizontal, 
   LayoutGrid, 
-  List, 
-  Tv 
+  List 
 } from 'lucide-vue-next';
 
-// Gukoresha router kugira ngo ishakisha ryoherezwe kuri Search page
 const router = useRouter();
 
-// 1. Reactive States
+// TMDB API Configuration
+const TMDB_API_KEY = 'YOUR_TMDB_API_KEY_HERE'; // Shyiramo API Key yawe ya TMDB hano
+const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
+
+// Reactive States
 const searchQuery = ref('');
 const selectedGenre = ref('All');
 const viewMode = ref('grid'); // 'grid' cyangwa 'list'
 const showFilters = ref(false);
-
-// 2. Gukora Search no kohereza kuri /search page
-const handleSearch = () => {
-  if (searchQuery.value.trim()) {
-    router.push({ path: '/search', query: { q: searchQuery.value } });
-  }
-};
-
-// 3. Sample Series Data (Zigera kuri 7)
-const seriesList = ref([
-  {
-    id: 101,
-    title: "A Shop of Killer",
-    epsod: "EPISODE 8",
-    genre: "Action",
-    rating: "4.9",
-    year: "2024",
-    image: "/src/assets/movies/shop.webp"
-  },
-  {
-    id: 102,
-    title: "Umthetho",
-    epsod: "EPISODE 12",
-    genre: "Drama",
-    rating: "4.4",
-    year: "2023",
-    image: "/src/assets/movies/umthetho.webp"
-  },
-  {
-    id: 103,
-    title: "Lioness",
-    epsod: "EPISODE 10",
-    genre: "Action",
-    rating: "4.8",
-    year: "2024",
-    image: "/src/assets/movies/lioness.webp"
-  },
-  {
-    id: 104,
-    title: "A Bona Fide Killer",
-    epsod: "EPISODE 13",
-    genre: "Episode",
-    rating: "4.9",
-    year: "2026",
-    image: "/src/assets/movies/bona.webp"
-  },
-  {
-    id: 105,
-    title: "The Silo",
-    epsod: "EPISODE 10",
-    genre: "Sci-Fi",
-    rating: "4.7",
-    year: "2023",
-    image: "/src/assets/movies/silo.webp"
-  },
-  {
-    id: 106,
-    title: "Death's Game",
-    epsod: "EPISODE 8",
-    genre: "Thriller",
-    rating: "4.8",
-    year: "2024",
-    image: "/src/assets/movies/death.webp"
-  },
-  {
-    id: 107,
-    title: "Teen Titans Go!",
-    epsod: "EPISODE 15",
-    genre: "Cartoon",
-    rating: "4.6",
-    year: "2025",
-    image: "/src/assets/movies/teen.webp"
-  }
-]);
+const seriesList = ref([]);
+const loading = ref(false);
 
 const genres = ['All', 'Action', 'Drama', 'Episode', 'Sci-Fi', 'Thriller', 'Cartoon'];
 
-// 4. Computed Filtering Logic (Niba ushaka ko iyungurura imbere muri page cyangwa igakora search)
-const filteredSeries = computed(() => {
-  return seriesList.value.filter((series) => {
-    const matchesSearch = series.title.toLowerCase().includes(searchQuery.value.toLowerCase());
-    const matchesGenre = selectedGenre.value === 'All' || series.genre.toLowerCase() === selectedGenre.value.toLowerCase();
-    return matchesSearch && matchesGenre;
-  });
-});
+// Function yo gukurura data muri TMDB API
+const fetchMoviesFromTMDB = async (query = '') => {
+  loading.value = true;
+  try {
+    let endpoint = `${TMDB_BASE_URL}/trending/all/day?api_key=${TMDB_API_KEY}`;
+    
+    if (query.trim()) {
+      endpoint = `${TMDB_BASE_URL}/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&include_adult=false`;
+    }
+
+    const response = await fetch(endpoint);
+    const data = await response.json();
+
+    // Kuzana amafoto n'amakuru y'ukuri kuri buri card
+    seriesList.value = (data.results || [])
+      .filter(item => item.poster_path && (item.media_type === 'movie' || item.media_type === 'tv' || !item.media_type))
+      .map(item => ({
+        id: item.id,
+        title: item.title || item.name,
+        epsod: item.media_type === 'tv' ? 'SERIES' : 'FULL MOVIE',
+        genre: item.media_type === 'tv' ? 'Episode' : 'Action',
+        rating: item.vote_average ? item.vote_average.toFixed(1) : 'N/A',
+        year: (item.release_date || item.first_air_date || '').split('-')[0] || '2026',
+        image: `${IMAGE_BASE_URL}${item.poster_path}`
+      }));
+  } catch (error) {
+    console.error('Ikibazo mu gukurura data muri TMDB:', error);
+  } finally {
+    loading.value = false;
+  }
+};
+
+// Gukurura data za mbere mu gihe page ifunguka
+fetchMoviesFromTMDB();
+
+const handleSearch = () => {
+  if (searchQuery.value.trim()) {
+    fetchMoviesFromTMDB(searchQuery.value);
+  }
+};
+
+let timeout = null;
+const onSearchInput = () => {
+  clearTimeout(timeout);
+  timeout = setTimeout(() => {
+    if (searchQuery.value.trim().length > 2) {
+      fetchMoviesFromTMDB(searchQuery.value);
+    } else if (!searchQuery.value.trim()) {
+      fetchMoviesFromTMDB();
+    }
+  }, 400);
+};
 </script>
 
 <template>
@@ -113,7 +85,6 @@ const filteredSeries = computed(() => {
     <!-- TOP HEADER / BRANDING -->
     <section class="start-banner">
       <div class="logo">
-       
         <h1 class="brand-title">Bravo.net</h1>
       </div>
       <h2>Download Free Agasobanuye Series and Movies</h2>
@@ -131,7 +102,7 @@ const filteredSeries = computed(() => {
 
       <div class="hero-banner">
         <div class="hero-content">
-          <h1 class="featured-title">A Bona Field Killer</h1>
+          <h1 class="featured-title">A Bona Fide Killer</h1>
 
           <div class="featured-meta">
             <span>Agasobanuye</span>
@@ -142,13 +113,12 @@ const filteredSeries = computed(() => {
           <p class="translator-info">Agasobanuye by Perfect</p>
 
           <div class="hero-actions">
-            <!-- Watch Now iri muri Hero Banner -->
-<a href="#" class="watch-now-btn" @click.prevent="$router.push('/account')">
-  <div class="play-icon-bg">
-    <Play :size="16" fill="white" color="white" />
-  </div>
-  <span>Watch Now</span>
-</a>
+            <a href="#" class="watch-now-btn" @click.prevent="$router.push('/account')">
+              <div class="play-icon-bg">
+                <Play :size="16" fill="white" color="white" />
+              </div>
+              <span>Watch Now</span>
+            </a>
 
             <div class="next-card">
               <span class="next-tag">NEXT</span>
@@ -176,22 +146,20 @@ const filteredSeries = computed(() => {
       </div>
     </div>
 
-    <!-- TRANSLATORS SECTIONS WITH HORIZONTAL SCROLL (7 CARDS EACH) -->
-      <!-- SEARCH & FILTER BAR SECTION -->
+    <!-- SEARCH & FILTER BAR SECTION -->
     <section class="search-bar-container">
       <div class="search-bar-card">
-        <!-- Input Box yashyizweho @keyup.enter kugira ngo ikore search -->
         <div class="search-input-box">
           <Search :size="20" class="search-icon" />
           <input 
             type="text" 
             v-model="searchQuery" 
+            @input="onSearchInput"
             @keyup.enter="handleSearch"
             placeholder="Search hot movies & series by title..." 
           />
         </div>
 
-        <!-- Action Buttons (Filters & View Toggles) -->
         <div class="search-actions">
           <button 
             class="filters-btn" 
@@ -236,21 +204,29 @@ const filteredSeries = computed(() => {
         </div>
       </div>
     </section>
- <div class="section-title-header">
-        <h2>  Hot Movies</h2>
-      </div>
+
+    <div class="section-title-header">
+      <h2>Hot Movies & Series</h2>
+    </div>
+
     <!-- SERIES DISPLAY SECTION -->
     <main class="content-section">
-      <!-- No Results State -->
-      <div v-if="filteredSeries.length === 0" class="no-results">
-        <p>Nta series zibonetse zihuye n'ibyo ushakisha "{{ searchQuery }}".</p>
+      <!-- Loading State -->
+      <div v-if="loading" class="no-results">
+        <p>Gushakisha amafoto n'amakuru birakora...</p>
       </div>
 
-      <!-- Grid View Mode -->
+      <!-- No Results State -->
+      <div v-else-if="seriesList.length === 0" class="no-results">
+        <p>Nta bisubizo bibonetse bihuye n'ibyo ushakisha "{{ searchQuery }}".</p>
+      </div>
+
+      <!-- Grid View Mode (Aha niho amafoto ya cards agaragara neza cyane) -->
       <div v-else-if="viewMode === 'grid'" class="cards-grid">
-        <div v-for="series in filteredSeries" :key="series.id" class="series-card">
+        <div v-for="series in seriesList" :key="series.id" class="series-card">
           <div class="card-image-box">
-            <img :src="series.image" :alt="series.title" />
+            <!-- Ifoto nyakuri ya poster ya filime -->
+            <img :src="series.image" :alt="series.title" loading="lazy" />
             <span class="ep-badge">{{ series.epsod }}</span>
             <div class="hover-play-overlay">
               <button class="play-btn"><Play :size="20" fill="white" /></button>
@@ -262,6 +238,8 @@ const filteredSeries = computed(() => {
               <span class="genre">{{ series.genre }}</span>
               <span class="dot-separator">•</span>
               <span class="year">{{ series.year }}</span>
+              <span class="dot-separator">•</span>
+              <span class="rating">⭐ {{ series.rating }}</span>
             </div>
           </div>
         </div>
@@ -269,17 +247,17 @@ const filteredSeries = computed(() => {
 
       <!-- List View Mode -->
       <div v-else class="cards-list">
-        <div v-for="series in filteredSeries" :key="series.id" class="list-row">
-          <img :src="series.image" :alt="series.title" class="list-thumb" />
+        <div v-for="series in seriesList" :key="series.id" class="list-row">
+          <img :src="series.image" :alt="series.title" class="list-thumb" loading="lazy" />
           <div class="list-details">
             <h3>{{ series.title }}</h3>
             <div class="list-meta">
               <span class="ep-badge-inline">{{ series.epsod }}</span>
               <span>{{ series.genre }}</span>
               <span>• {{ series.year }}</span>
+              <span>• ⭐ {{ series.rating }}</span>
             </div>
           </div>
-          
         </div>
       </div>
     </main>
@@ -293,6 +271,52 @@ const filteredSeries = computed(() => {
   padding: 20px;
   color: white;
 }
+
+/* TOP BANNER */
+.start-banner {
+  text-align: center;
+  padding: 30px 20px;
+  margin-bottom: 20px;
+}
+
+.brand-title {
+  font-size: 4rem;
+  font-weight: 1000;
+  color: white;
+}
+
+.start-banner h2 {
+  font-size: 1.2rem;
+  color: #9ca3af;
+  margin: 10px 0 20px 0;
+  font-weight: 400;
+}
+
+.download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #b11010b1;
+  color: white;
+  padding: 12px 28px;
+  border-radius: 30px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.download-btn:hover {
+  background: #13833d;
+  transform: scale(1.03);
+}
+
+.small-text {
+  color: #64748b;
+  font-style: italic;
+  margin-top: 10px;
+  font-size: 0.9rem;
+}
+
 /* SEARCH & FILTERS BAR */
 .search-bar-container {
   margin-bottom: 40px;
@@ -360,6 +384,7 @@ const filteredSeries = computed(() => {
   border-color: #10b981;
   color: #34d399;
 }
+
 .view-toggle {
   display: flex;
   background: #020617;
@@ -427,6 +452,204 @@ const filteredSeries = computed(() => {
   background: #10b981;
   color: white;
   border-color: #10b981;
+}
+
+/* SECTION HEADER */
+.section-title-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  position: relative;
+  padding-left: 16px;
+}
+
+.section-title-header::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 5px;
+  height: 24px;
+  background: #10b981;
+  border-radius: 4px;
+}
+
+.section-title-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* HERO BANNER */
+.featured-section {
+  margin-bottom: 40px;
+}
+
+.hero-banner {
+  position: relative;
+  min-height: 480px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: linear-gradient(90deg, rgba(11, 15, 25, 0.92) 0%, rgba(11, 15, 25, 0.4) 60%), 
+              url('/src/assets/movies/bonaback.webp');
+  background-size: cover;
+  background-position: center;
+  padding: 45px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+}
+
+.hero-content {
+  max-width: 650px;
+  z-index: 2;
+}
+
+.featured-title {
+  font-size: 4rem;
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+.featured-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #94a3b8;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+}
+
+.meta-separator {
+  color: #475569;
+}
+
+.translator-info {
+  color: #cbd5e1;
+  font-size: 1rem;
+  margin-bottom: 25px;
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.watch-now-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, #10b981, #064e3b);
+  color: white;
+  padding: 12px 28px;
+  border-radius: 30px;
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 1rem;
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+  transition: transform 0.2s;
+}
+
+.watch-now-btn:hover {
+  transform: scale(1.04);
+}
+
+.play-icon-bg {
+  background: rgba(255, 255, 255, 0.25);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.next-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(8px);
+  padding: 6px 14px 6px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.next-tag {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  font-weight: 800;
+}
+
+.next-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.next-img {
+  width: 28px;
+  height: 38px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.next-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.slider-controls {
+  position: absolute;
+  bottom: 25px;
+  left: 40px;
+  right: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 2;
+}
+
+.dots-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+}
+
+.active-bar {
+  width: 45px;
+  height: 4px;
+  background: linear-gradient(to right, #10b981, #34d399);
+  border-radius: 4px;
+}
+
+.slide-counter {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(8px);
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  color: #64748b;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.current-slide {
+  color: white;
+  font-weight: bold;
 }
 
 /* CARDS GRID DISPLAY */
@@ -574,19 +797,6 @@ const filteredSeries = computed(() => {
   font-weight: 600;
 }
 
-.watch-list-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: #10b981;
-  color: white;
-  border: none;
-  padding: 8px 18px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
 .no-results {
   text-align: center;
   padding: 60px;
@@ -597,18 +807,6 @@ const filteredSeries = computed(() => {
 }
 
 @media (max-width: 900px) {
-  .decorative-tv {
-    display: none;
-  }
-  
-  .series-header {
-    padding: 32px 24px;
-  }
-
-  .header-title {
-    font-size: 3rem;
-  }
-
   .search-bar-card {
     flex-direction: column;
     align-items: stretch;
@@ -617,283 +815,9 @@ const filteredSeries = computed(() => {
   .search-actions {
     justify-content: space-between;
   }
-}
-/* TOP BANNER */
-.start-banner {
-  text-align: center;
-  padding: 30px 20px;
-  margin-bottom: 20px;
-}
 
-.brand-title {
-  margin-left: 60px;
-  font-size: 
-  4rem;
-  font-weight: 1000;
-  color: white;
-}
-.brand-title {
-  animation: tracking-in-expand 1s cubic-bezier(0.215, 0.610, 0.355, 1.000) both;
-}
-
-@keyframes brand-title {
-  0% {
-    letter-spacing: -0.5em;
-    opacity: 0;
-  }
-  40% {
-    opacity: 0.6;
-  }
-  100% {
-    opacity: 1;
+  .featured-title {
+    font-size: 2.8rem;
   }
 }
-.purple-dot {
-  color: #a855f7;
-}
-
-.start-banner h2 {
-  font-size: 1.2rem;
-  color: #9ca3af;
-  margin: 10px 0 20px 0;
-  font-weight: 400;
-}
-
-.download-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  background: #b11010b1;
-  color: white;
-  padding: 12px 28px;
-  border-radius: 30px;
-  font-weight: 700;
-  text-decoration: none;
-  transition: transform 0.2s, background 0.2s;
-}
-
-.download-btn:hover {
-  background: #13833d;
-  transform: scale(1.03);
-}
-
-.small-text {
-  color: #64748b;
-  font-style: italic;
-  margin-top: 10px;
-  font-size: 0.9rem;
-}
-
-/* SEARCH & GENRE FILTER BAR (ISANZWE) */
-
-
-.search-icon {
-  position: absolute;
-  left: 15px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #94a3b8;
-}
-
-
-
-/* SECTION HEADER */
-.section-title-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-  position: relative;
-  padding-left: 16px;
-}
-
-.section-title-header::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 5px;
-  height: 24px;
-  background: #2d7cff;
-  border-radius: 4px;
-}
-
-.section-title-header h2 {
-  font-size: 1.5rem;
-  font-weight: 700;
-}
-
-/* HERO BANNER */
-.featured-section {
-  margin-bottom: 40px;
-}
-
-.hero-banner {
-  position: relative;
-  min-height: 480px;
-  border-radius: 20px;
-  overflow: hidden;
-  background: linear-gradient(90deg, rgba(11, 15, 25, 0.92) 0%, rgba(11, 15, 25, 0.4) 60%,) 
-              url('/frontend/src/assets/movies/bonaback.webp');
-  background-size: cover;
-  background-position: center;
-  padding: 45px 40px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-}
-
-.hero-content {
-  max-width: 650px;
-  z-index: 2;
-}
-
-.featured-title {
-  font-size: 4rem;
-  font-weight: 900;
-  line-height: 1;
-  margin-bottom: 12px;
-}
-
-.featured-meta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #94a3b8;
-  font-size: 0.95rem;
-  margin-bottom: 8px;
-}
-
-.meta-separator {
-  color: #475569;
-}
-
-.translator-info {
-  color: #cbd5e1;
-  font-size: 1rem;
-  margin-bottom: 25px;
-}
-
-.hero-actions {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  margin-bottom: 25px;
-}
-
-.watch-now-btn {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: linear-gradient(135deg, #3b82f6, #a855f7);
-  color: white;
-  padding: 12px 28px;
-  border-radius: 30px;
-  font-weight: 700;
-  text-decoration: none;
-  font-size: 1rem;
-  box-shadow: 0 4px 20px rgba(168, 85, 247, 0.4);
-  transition: transform 0.2s;
-}
-
-.watch-now-btn:hover {
-  transform: scale(1.04);
-}
-
-.play-icon-bg {
-  background: rgba(255, 255, 255, 0.25);
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.next-card {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(8px);
-  padding: 6px 14px 6px 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.next-tag {
-  font-size: 0.7rem;
-  color: #94a3b8;
-  font-weight: 800;
-}
-
-.next-content {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.next-img {
-  width: 28px;
-  height: 38px;
-  object-fit: cover;
-  border-radius: 4px;
-}
-
-.next-title {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #e2e8f0;
-}
-
-.slider-controls {
-  position: absolute;
-  bottom: 25px;
-  left: 40px;
-  right: 40px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  z-index: 2;
-}
-
-.dots-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.dot {
-  width: 6px;
-  height: 6px;
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-}
-
-.active-bar {
-  width: 45px;
-  height: 4px;
-  background: linear-gradient(to right, #ec4899, #a855f7, #3b82f6);
-  border-radius: 4px;
-}
-
-.slide-counter {
-  background: rgba(15, 23, 42, 0.7);
-  backdrop-filter: blur(8px);
-  padding: 5px 14px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  color: #64748b;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.current-slide {
-  color: white;
-  font-weight: bold;
-}
-
-
 </style>
